@@ -1,6 +1,6 @@
 from flask import Flask, render_template, abort, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_
+# from sqlalchemy import or_
 from pathlib import Path
 from werkzeug.exceptions import HTTPException
 from flask_migrate import Migrate
@@ -18,9 +18,6 @@ app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# master129;Малахов;Арсений;Викторович;25/01/1993;+7(918)646-55-91
-# airfix;Мадатов;Василий;Евгеньевич;30/11/1995;+7(951)345-83-17
-# kr0ff;Малинин;Петр;Степанович;18/12/1996;+7(938)044-15-18
 
 class UserModel(db.Model):
     __tablename__ = "users"
@@ -30,7 +27,16 @@ class UserModel(db.Model):
     middle_name = db.Column(db.String(32), unique=False, nullable=False)
     birth_date = db.Column(db.String(32), unique=False, nullable=False)
     phone = db.Column(db.String(32), unique=False, nullable=False)
-    
+
+
+    def to_dict(self):
+        return {"login": self.login,
+                "surname": self.surname,
+                "name": self.name,
+                "middle_name": self.middle_name,
+                "birth_date": self.birth_date,
+                "phone": self.phone}
+
 
 # Обработка ошибок и возврат значения в виде JSON
 @app.errorhandler(HTTPException)
@@ -43,7 +49,7 @@ def home():
     return render_template("index.html") 
 
 
-@app.route('/about') # http://127.0.0.1:5000/about
+@app.route('/about')
 def about():
     return render_template("about.html") 
 
@@ -54,9 +60,10 @@ def users_list():
     entities = list()
 
     for user_db in users_db:
-        entities.append({**user_db})
+        entities.append(user_db.to_dict())
 
-    return render_template("users_list.html", entities=entities)
+    return render_template("users_list.html", **{"entities":entities})
+
 
 @app.route("/users/<login>")
 def user_item(login):
