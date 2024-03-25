@@ -1,0 +1,14 @@
+<!-- <p>Имя пользователя: {{ name }}</p> -->
+
+{% extends "base.html" %}
+
+{% block title %}Имена клиентов{%endblock%}
+
+
+{% block content %}
+
+{% for name in entities %}
+<p>{{ name }}</p>
+{% endfor %}
+
+{%endblock%}

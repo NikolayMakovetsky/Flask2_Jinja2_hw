@@ -74,6 +74,16 @@ def user_item(login):
         return render_template("user_info.html", item=item)
     abort(404, f"User with login: {login} not found")
 
+@app.get('/names')
+def users_names_list():
+    users_db = UserModel.query.all()
+    entities = list()
+
+    for user_db in users_db:
+        entities.append(user_db.name)
+
+    return render_template("names.html", entities=entities)    
+
 
 if __name__ == '__main__':
     app.run(debug=True)
